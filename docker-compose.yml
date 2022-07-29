@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  php-cli:
+    build:
+      context: ${PWD}/docker/php
+    tty: true
+    volumes:
+      - ${PWD}/app:/app
+    working_dir: /app
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - ${PWD}/docker/mysql/data/mysql:/var/lib/mysql
+
+  mailer:
+    image: maildev/maildev:latest
+    ports:
+      - '1080:1080'
+      - '1025:1025'
