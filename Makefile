@@ -52,3 +52,24 @@ server-run:
 ## sh			: Access the php container via shell
 sh:
 	$(DOCKER_EXEC) sh
+
+##
+## Tests
+##---------------------------------------------------------------------------
+.PHONY: test test-unit test-functional
+
+## test			:Run unit and functional testsuite
+test: test-unit test-functional
+
+## test-unit		:Run unit testsuite
+test-unit:
+	$(DOCKER_RUN) bin/phpunit --testsuite unit
+
+## test-functional	:Prepare test database and run functional testsuite
+test-functional: prepare-test-database
+	$(DOCKER_RUN) bin/phpunit --testsuite functional
+
+prepare-test-database:
+	$(DOCKER_RUN) bin/console --no-interaction --env=test doctrine:database:drop --if-exists --force
+	$(DOCKER_RUN) bin/console --no-interaction --env=test doctrine:database:create
+	$(DOCKER_RUN) bin/console --no-interaction --env=test doctrine:migrations:migrate
